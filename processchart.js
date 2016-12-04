@@ -26,28 +26,53 @@ var _location = "USA";
 var _year = "1990";
 var _metric = "obese";
 
+function resetchart()
+{
+    d3.select("svg").remove();
+    svg = d3.select("#chart-svg").append("svg")
+	    .attr("width", width + margin.left + margin.right)
+	    .attr("height", height + margin.top + margin.bottom)
+	    .append("g")
+	    .attr("class", "graph")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+}
+
 function loadCountry(inputcountry)
 {
-
+    resetchart();
 	_location = inputcountry;
 	load();
 }
 
 function loadYear(inputyear)
 {
-
+    resetchart();
 	_year = inputyear;
 	load();
 }
 
 function loadMetric(inputmetrice)
 {
+    resetchart();
+    d3.select("svg").remove();
+    svg = d3.select("#chart-svg").append("svg")
+	    .attr("width", width + margin.left + margin.right)
+	    .attr("height", height + margin.top + margin.bottom)
+	    .append("g")
+	    .attr("class", "graph")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	_metric = inputmetrice;
 	load();
 }
 
 var headers = [ "Male", "Female"];
+
+var barsM;
+var barsF;
+
+var dataMale;
+var dataFemale;
 
 function load() {
 
@@ -94,11 +119,14 @@ function load() {
             .style("text-anchor", "end")
             .text("Mean");
 
-        svg.selectAll(".bar").data(data).exit().remove();
+//        barsM.exit().remove();
+//        barsF.exit().remove();
 
-
+        // this is the "Enter" part of the join, update, enter steps
         barsM = svg.selectAll(".bar").data(dataMale).enter();
         barsF = svg.selectAll(".bar").data(dataFemale).enter();
+
+
 
         barsM.append("rect")
             .attr("class", "bar1")
@@ -114,7 +142,8 @@ function load() {
             .attr("y", function (d) { return y(d.mean * 100); })
             .attr("height", function (d, i, j) { return height - y(d.mean * 100); });
 
-
+        svg.selectAll(".bar").data(dataMale).exit().remove();
+        svg.selectAll(".bar").data(dataFemale).exit().remove();
 
         var color = d3.scale.ordinal()
             .domain([0, 1])
